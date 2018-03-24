@@ -116,9 +116,9 @@ class MailingList:
         Yields
         ------
         Date
-            A valid date for this mailing list, yielded in ascending order
+            A valid date for this mailing list, yielded in descending order
         """
-        for row in self.soup.find_all('tr')[1:][::-1]:
+        for row in self.soup.find_all('tr')[1:]:
             month_str = row.find('td').text.replace(':', '')
             month = datetime.strptime(month_str, '%B %Y')
             yield month

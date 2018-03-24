@@ -17,26 +17,30 @@ def scrape_all(engine):
     session = sessionmaker(bind=engine)()
 
     for list_id in get_list_ids():
-        mailing_list = MailingList(list_id)
-        for i, message in enumerate(mailing_list.messages()):
-            db_message = Message(
-                message_id=message.message_id,
-                text=message.text,
-                sent_at=message.sent_at,
-                list_id=message.list_id,
-                author=message.author,
-                email=message.email,
-                thread_parent=message.thread_parent,
-                thread_idx=message.thread_idx,
-            )
-            session.merge(db_message)
-            if i % 100 == 0:
-                session.commit()
+        scrape_list(session, list_id)
+
+def scrape_list(session, list_id):
+    mailing_list = MailingList(list_id)
+    for i, message in enumerate(mailing_list.messages()):
+        db_message = Message(
+            message_id=message.message_id,
+            text=message.text,
+            sent_at=message.sent_at,
+            list_id=message.list_id,
+            author=message.author,
+            email=message.email,
+            thread_parent=message.thread_parent,
+            thread_idx=message.thread_idx,
+        )
+        session.merge(db_message)
+        if i % 100 == 0:
+            session.commit()
 
 
 if __name__ == '__main__':
     engine = create_engine('sqlite:///scraper.db')
     Base.metadata.create_all(engine)
 
-    scrape_all(engine)
+    # scrape_all(engine)
+    scrape_list(sessionmaker(bind=engine)(), 'python-dev')
     

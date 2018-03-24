@@ -79,7 +79,10 @@ class Message:
         str
             The message text
         """
-        return self.soup.find('pre').text.strip()
+        pre_elem = self.soup.find('pre')
+        if pre_elem is None:
+            return None
+        return pre_elem.text.strip()
 
     @property
     def sent_at(self):
