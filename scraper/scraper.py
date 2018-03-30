@@ -4,6 +4,9 @@ from mailing_list import MailingList
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from model import Base, Message
+import logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 def get_list_ids():
@@ -17,11 +20,13 @@ def scrape_all(engine):
     session = sessionmaker(bind=engine)()
 
     for list_id in get_list_ids():
+        logger.info('Beginning to scrape "{}"'.format(list_id))
         scrape_list(session, list_id)
 
 def scrape_list(session, list_id):
     mailing_list = MailingList(list_id)
     for i, message in enumerate(mailing_list.messages()):
+        logger.info("Scraped message: {}".format(message))
         db_message = Message(
             message_id=message.message_id,
             text=message.text,
@@ -35,12 +40,12 @@ def scrape_list(session, list_id):
         session.merge(db_message)
         if i % 100 == 0:
             session.commit()
+            logger.info('Committed messages to database')
 
 
 if __name__ == '__main__':
     engine = create_engine('sqlite:///scraper.db')
     Base.metadata.create_all(engine)
 
-    # scrape_all(engine)
-    scrape_list(sessionmaker(bind=engine)(), 'python-dev')
+    scrape_all(engine)
     

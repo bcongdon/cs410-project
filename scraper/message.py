@@ -119,7 +119,7 @@ class Message:
 
     def __str__(self):
         return "<Message - List: {}, Month: {}, ID: {}>".format(
-            self.list_id, self.month, self.message_id)
+            self.list_id, format_month(self.month), self.message_id)
 
     def __repr__(self):
         return self.__str__()
