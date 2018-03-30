@@ -1,0 +1,23 @@
+[[source]]
+
+verify_ssl = true
+url = "https://pypi.python.org/simple"
+name = "pypi"
+
+
+[requires]
+
+python_version = "3.6"
+
+
+[dev-packages]
+
+
+
+[packages]
+
+"bs4" = "*"
+requests = "*"
+python-dateutil = "*"
+sqlalchemy = "*"
+lxml = "==4.1.0"

@@ -47,8 +47,8 @@ class MailingList:
 
         try:
             req = requests.get(BASE_URL + self.list_id)
-        except:
-            logger.error("Request failed for list {}".format(list_id))
+        except Exception as e:
+            logger.error("Request failed for list {}. ".format(self.list_id), e)
 
         self._soup = BeautifulSoup(req.text, 'lxml')
         return self._soup
@@ -94,7 +94,7 @@ class MailingList:
         for thread in thread_ul.find_all('li', recursive=False):
             thread_id = self._message_link_to_id(thread.find('a', href=True)['href'])
             yield Message(self.list_id, page, thread_id, thread_id, 0, 0)
-            
+
             for child_idx, child in enumerate(thread.find_all('li')):
                 depth = 0
                 tmp = child
