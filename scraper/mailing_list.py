@@ -122,7 +122,8 @@ class MailingList:
         for row in self.soup.find_all('tr')[1:]:
             page_url = row.find('a')['href']
             page = page_url.replace('/thread.html', '')
-            pages.append(page)
+            if page:
+                pages.append(page)
         return pages
 
     def messages(self, page=None):
@@ -147,7 +148,7 @@ class MailingList:
         for page in pages:
             for message in self._scrape_page(page):
                 yield message
-            time.sleep(0.75)
+            time.sleep(1.0)
         
 
 if __name__ == '__main__':
