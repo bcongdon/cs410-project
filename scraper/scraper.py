@@ -36,7 +36,8 @@ def scrape_list(session, list_id):
             email=message.email,
             thread_parent=message.thread_parent,
             thread_idx=message.thread_idx,
-            thread_indent=message.thread_indent
+            thread_indent=message.thread_indent,
+            page=message.page
         )
         session.merge(db_message)
         if i % 100 == 0:

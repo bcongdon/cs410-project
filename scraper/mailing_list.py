@@ -4,7 +4,6 @@ from datetime import date, datetime
 import time
 import logging
 from message import Message
-from util import format_month
 
 logging.basicConfig(level='INFO')
 logger = logging.getLogger(__name__)
@@ -71,30 +70,30 @@ class MailingList:
         """
         return link.split('.')[0]
 
-    def _scrape_month(self, month):
-        """Scrapes all the messages from this mailing list that were posted during the given month
+    def _scrape_page(self, page):
+        """Scrapes all the messages from this mailing list that were posted during the given page
         
         Parameters
         ----------
-        month : Date
-            The month to scrape
+        page : str
+            The subpage to scrape
         
         Yields
         ------
         Message
             The scraped message
         """
-        logger.info('Scraping "{}" for month {}'.format(self.list_id, format_month(month)))
+        logger.info('Scraping "{}" for page {}'.format(self.list_id, page))
 
         req = requests.get('/'.join(
-            [BASE_URL, self.list_id, format_month(month), 'thread.html']
+            [BASE_URL, self.list_id, page, 'thread.html']
         ))
         soup = BeautifulSoup(req.text, 'lxml')
         thread_ul = soup.find_all('ul')[1]
 
         for thread in thread_ul.find_all('li', recursive=False):
             thread_id = self._message_link_to_id(thread.find('a', href=True)['href'])
-            yield Message(self.list_id, month, thread_id, thread_id, 0, 0)
+            yield Message(self.list_id, page, thread_id, thread_id, 0, 0)
             
             for child_idx, child in enumerate(thread.find_all('li')):
                 depth = 0
@@ -106,33 +105,32 @@ class MailingList:
                 child_id = self._message_link_to_id(child.find('a', href=True)['href'])
                 yield Message(
                     list_id=self.list_id,
-                    month=month,
+                    page=page,
                     message_id=child_id,
                     thread_parent=thread_id,
                     thread_idx=child_idx + 1,
                     thread_indent=depth)
 
-    def _get_months(self):
-        """Returns the months for which there are posts in this mailing list.
+    def _get_pages(self):
+        """Returns the pages for which there are posts in this mailing list. (Usually month-based)
 
-        Scrapes the mailing list summary page to get the valid months.
+        Scrapes the mailing list summary page to get the valid suibpages.
         
-        Yields
-        ------
-        Date
-            A valid date for this mailing list, yielded in descending order
+        TODO: Add return type documentation
         """
+        pages = []
         for row in self.soup.find_all('tr')[1:]:
-            month_str = row.find('td').text.replace(':', '')
-            month = datetime.strptime(month_str, '%B %Y')
-            yield month
+            page_url = row.find('a')['href']
+            page = page_url.replace('/thread.html', '')
+            pages.append(page)
+        return pages
 
-    def messages(self, month=None):
+    def messages(self, page=None):
         """
         Parameters
         ----------
-        month : Date, optional
-            If provided, `messages` will only yield messages that were posted in this month
+        page : str, optional
+            If provided, `messages` will only yield messages that were posted on this subpage
         
         Yields
         ------
@@ -141,15 +139,15 @@ class MailingList:
         
         """
 
-        if month is not None:
-            months = [month]
+        if page is not None:
+            pages = [page]
         else:
-            months = self._get_months()
+            pages = self._get_pages()
 
-        for month in months:
-            for message in self._scrape_month(month):
+        for page in pages:
+            for message in self._scrape_page(page):
                 yield message
-            time.sleep(1.0)
+            time.sleep(0.75)
         
 
 if __name__ == '__main__':

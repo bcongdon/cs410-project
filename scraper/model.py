@@ -15,3 +15,4 @@ class Message(Base):
     thread_parent = Column(Integer)
     thread_idx = Column(Integer)
     thread_indent = Column(Integer)
+    page = Column(String)

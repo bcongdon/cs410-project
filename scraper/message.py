@@ -1,7 +1,6 @@
 from dateutil.parser import parse
 import requests
 from bs4 import BeautifulSoup
-from util import format_month
 import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -18,8 +17,8 @@ class Message:
         The list the message came from 
     message_id : str
         The message's id
-    month : Date
-        The month in which the message was created
+    page : str
+        The subpage in which the message was created
     thread_idx : int
         The index of this message in its thread
     thread_parent : str
@@ -28,7 +27,7 @@ class Message:
         The indent level of this message in its thread
     """
     
-    def __init__(self, list_id, month, message_id, thread_parent, thread_idx, thread_indent):
+    def __init__(self, list_id, page, message_id, thread_parent, thread_idx, thread_indent):
         """
         Parameters
         ----------
@@ -36,8 +35,8 @@ class Message:
             The list the message came from 
         message_id : str
             The message's id
-        month : Date
-            The month in which the message was created
+        page : str
+            The subpage in which the message was created
         thread_idx : int
             The index of this message in its thread
         thread_parent : str
@@ -47,7 +46,7 @@ class Message:
         """
 
         self.list_id = list_id
-        self.month = month
+        self.page = page
         self.message_id = message_id
         self.thread_parent = thread_parent
         self.thread_idx = thread_idx
@@ -71,7 +70,7 @@ class Message:
 
         try:
             req = requests.get('/'.join(
-                [BASE_URL, self.list_id, format_month(self.month), self.message_id + '.html']))
+                [BASE_URL, self.list_id, self.page, self.message_id + '.html']))
             self._soup = BeautifulSoup(req.text, 'lxml')
         except:
             logger.warn('Request failed for message {} in list {}'.format(self.message_id, self.list_id))
@@ -138,8 +137,8 @@ class Message:
         return email_elem.text.strip()
 
     def __str__(self):
-        return "<Message - List: {}, Month: {}, ID: {}>".format(
-            self.list_id, format_month(self.month), self.message_id)
+        return "<Message - List: {}, Page: {}, ID: {}>".format(
+            self.list_id, self.page, self.message_id)
 
     def __repr__(self):
         return self.__str__()
