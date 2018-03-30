@@ -104,7 +104,12 @@ class Message:
         if sent_at_elem is None:
             logger.warn("Couldn't find sent_at for message {} in list {}".format(self.message_id, self.list_id))
             return None
-        return parse(sent_at_elem.text)
+        try:
+            return parse(sent_at_elem.text)
+        except:
+            logger.warn("Unable to parse '{}' as a datetime".format(sent_at_elem.text))
+            return None
+
 
     @property
     def author(self):
