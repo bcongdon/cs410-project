@@ -2,6 +2,9 @@ from dateutil.parser import parse
 import requests
 from bs4 import BeautifulSoup
 from util import format_month
+import logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 BASE_URL = 'https://mail.python.org/pipermail'
 
@@ -65,9 +68,12 @@ class Message:
         if self._soup is not None:
             return self._soup
 
-        req = requests.get('/'.join(
-            [BASE_URL, self.list_id, format_month(self.month), self.message_id + '.html']))
-        self._soup = BeautifulSoup(req.text, 'lxml')
+        try:
+            req = requests.get('/'.join(
+                [BASE_URL, self.list_id, format_month(self.month), self.message_id + '.html']))
+            self._soup = BeautifulSoup(req.text, 'lxml')
+        except:
+            logger.warn('Request failed for message {} in list {}'.format(self.message_id, self.list_id))
         return self._soup
 
     @property
@@ -81,7 +87,8 @@ class Message:
         """
         pre_elem = self.soup.find('pre')
         if pre_elem is None:
-            return None
+            logger.warn("Couldn't find message text for message {} in list {}".format(self.message_id, self.list_id))
+            return ""
         return pre_elem.text.strip()
 
     @property
@@ -93,7 +100,11 @@ class Message:
         DateTime
             The sent_at time of the message
         """
-        return parse(self.soup.find('i').text)
+        sent_at_elem = self.soup.find('i')
+        if sent_at_elem is None:
+            logger.warn("Couldn't find sent_at for message {} in list {}".format(self.message_id, self.list_id))
+            return ""
+        return parse(sent_at_elem.text)
 
     @property
     def author(self):
@@ -104,7 +115,11 @@ class Message:
         str
             The author name of the message
         """
-        return self.soup.find('b').text.strip()
+        author_elem = self.soup.find('b')
+        if author_elem is None:
+            logger.warn("Couldn't find author for message {} in list {}".format(self.message_id, self.list_id))
+            return ""
+        return author_elem.text.strip()
 
     @property
     def email(self):
@@ -115,7 +130,11 @@ class Message:
         str
             The sending email of the message
         """
-        return self.soup.find('a').text.strip()
+        email_elem = self.soup.find('a')
+        if email_elem is None:
+            logger.warn("Couldn't find email for message {} in list {}".format(self.message_id, self.list_id))
+            return ""
+        return email_elem.text.strip()
 
     def __str__(self):
         return "<Message - List: {}, Month: {}, ID: {}>".format(

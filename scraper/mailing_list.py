@@ -46,7 +46,11 @@ class MailingList:
         if self._soup is not None:
             return self._soup
 
-        req = requests.get(BASE_URL + self.list_id)
+        try:
+            req = requests.get(BASE_URL + self.list_id)
+        except:
+            logger.error("Request failed for list {}".format(list_id))
+
         self._soup = BeautifulSoup(req.text, 'lxml')
         return self._soup
 
