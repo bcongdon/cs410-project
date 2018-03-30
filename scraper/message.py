@@ -51,6 +51,7 @@ class Message:
         self.message_id = message_id
         self.thread_parent = thread_parent
         self.thread_idx = thread_idx
+        self.thread_indent = thread_indent
 
         self._soup = None
 
@@ -88,7 +89,7 @@ class Message:
         pre_elem = self.soup.find('pre')
         if pre_elem is None:
             logger.warn("Couldn't find message text for message {} in list {}".format(self.message_id, self.list_id))
-            return ""
+            return None
         return pre_elem.text.strip()
 
     @property
@@ -103,7 +104,7 @@ class Message:
         sent_at_elem = self.soup.find('i')
         if sent_at_elem is None:
             logger.warn("Couldn't find sent_at for message {} in list {}".format(self.message_id, self.list_id))
-            return ""
+            return None
         return parse(sent_at_elem.text)
 
     @property
@@ -118,7 +119,7 @@ class Message:
         author_elem = self.soup.find('b')
         if author_elem is None:
             logger.warn("Couldn't find author for message {} in list {}".format(self.message_id, self.list_id))
-            return ""
+            return None
         return author_elem.text.strip()
 
     @property
@@ -133,7 +134,7 @@ class Message:
         email_elem = self.soup.find('a')
         if email_elem is None:
             logger.warn("Couldn't find email for message {} in list {}".format(self.message_id, self.list_id))
-            return ""
+            return None
         return email_elem.text.strip()
 
     def __str__(self):
