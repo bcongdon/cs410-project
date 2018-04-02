@@ -148,7 +148,6 @@ class MailingList:
         for page in pages:
             for message in self._scrape_page(page):
                 yield message
-            time.sleep(1.0)
         
 
 if __name__ == '__main__':

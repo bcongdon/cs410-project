@@ -4,6 +4,8 @@ from mailing_list import MailingList
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from model import Base, Message
+from multiprocessing import Pool
+import argparse
 import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -16,29 +18,40 @@ def get_list_ids():
         link = row.find('a', href=True)['href']
         yield link.split('/')[-1]
 
-def scrape_all(engine):
+def scrape_all(engine, start_at=None, parallelism=1):
     session = sessionmaker(bind=engine)()
 
     for list_id in get_list_ids():
+        if start_at is not None and list_id < start_at:
+            continue
         logger.info('Beginning to scrape "{}"'.format(list_id))
-        scrape_list(session, list_id)
+        scrape_list(session, list_id, parallelism)
 
-def scrape_list(session, list_id):
+def message_to_db_message(message):
+    db_message = Message(
+        message_id=message.message_id,
+        text=message.text,
+        sent_at=message.sent_at,
+        list_id=message.list_id,
+        author=message.author,
+        email=message.email,
+        thread_parent=message.thread_parent,
+        thread_idx=message.thread_idx,
+        thread_indent=message.thread_indent,
+        page=message.page
+    )
+    logger.info("Scraped message: {}".format(message))
+    return db_message
+
+def scrape_list(session, list_id, parallelism=1):
     mailing_list = MailingList(list_id)
-    for i, message in enumerate(mailing_list.messages()):
-        logger.info("Scraped message: {}".format(message))
-        db_message = Message(
-            message_id=message.message_id,
-            text=message.text,
-            sent_at=message.sent_at,
-            list_id=message.list_id,
-            author=message.author,
-            email=message.email,
-            thread_parent=message.thread_parent,
-            thread_idx=message.thread_idx,
-            thread_indent=message.thread_indent,
-            page=message.page
-        )
+    pool = Pool(processes=parallelism) 
+    parallel_generator = pool.imap(
+        message_to_db_message,
+        mailing_list.messages()
+    )
+
+    for i, db_message in enumerate(parallel_generator):
         session.merge(db_message)
         if i % 100 == 0:
             session.commit()
@@ -49,5 +62,10 @@ if __name__ == '__main__':
     engine = create_engine('sqlite:///scraper.db')
     Base.metadata.create_all(engine)
 
-    scrape_all(engine)
-    
+    parser = argparse.ArgumentParser(description='Python Mailing List Scraper')
+    parser.add_argument('--parallelism',
+        default=4, type=int, help='The number of parallel scraping processes to use')
+    parser.add_argument('--start_at', help='The mailing list to start at (alphabetically)')
+    args = parser.parse_args()
+
+    scrape_all(engine, args.start_at, args.parallelism)
