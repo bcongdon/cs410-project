@@ -56,6 +56,7 @@ def scrape_list(session, list_id, parallelism=1):
         if i % 100 == 0:
             session.commit()
             logger.info('Committed messages to database')
+    pool.close()
 
 
 if __name__ == '__main__':
