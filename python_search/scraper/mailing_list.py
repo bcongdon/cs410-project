@@ -3,7 +3,7 @@ import requests
 from datetime import date, datetime
 import time
 import logging
-from message import Message
+from .message import Message
 
 logging.basicConfig(level='INFO')
 logger = logging.getLogger(__name__)

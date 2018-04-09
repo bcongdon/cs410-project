@@ -3,6 +3,7 @@ from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 
+
 class Message(Base):
     __tablename__ = 'message'
     message_id = Column(String, primary_key=True)
