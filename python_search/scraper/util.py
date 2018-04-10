@@ -13,4 +13,4 @@ def format_month(month):
     str
         The formatted data
     """
-    return month.strftime('%Y-%B')
+    return month.strftime("%Y-%B")

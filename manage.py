@@ -5,13 +5,16 @@ from python_search import scraper
 manager = Manager(app)
 
 
-@manager.option('--parallelism',
-                help='The number of parallel scraping processes to use',
-                type=int,
-                default=1)
-@manager.option('--start_at',
-                help='The mailing list to start at (alphabetically)')
-@manager.option('--update', type=bool)
+@manager.option(
+    "--parallelism",
+    help="The number of parallel scraping processes to use",
+    type=int,
+    default=1,
+)
+@manager.option(
+    "--start_at", help="The mailing list to start at (alphabetically)"
+)
+@manager.option("--update", type=bool)
 def scrape(parallelism, start_at, update):
     scraper.scrape_cmd(parallelism, start_at, update)
 
@@ -20,5 +23,6 @@ def scrape(parallelism, start_at, update):
 def run():
     app.run()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     manager.run()

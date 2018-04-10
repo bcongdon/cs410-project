@@ -5,7 +5,7 @@ Base = declarative_base()
 
 
 class Message(Base):
-    __tablename__ = 'message'
+    __tablename__ = "message"
     message_id = Column(String, primary_key=True)
     text = Column(String)
     sent_at = Column(DateTime)

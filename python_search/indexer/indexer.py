@@ -13,7 +13,7 @@ schema = Schema(
     message_id=ID(stored=True),
     content=TEXT,
     author=TEXT,
-    sent_at=DATETIME
+    sent_at=DATETIME,
 )
 
 # if not os.path.exists('index'):
@@ -53,9 +53,9 @@ schema = Schema(
 # writer.commit()
 
 # Search for Documents
-idx_read = open_dir('index')
+idx_read = open_dir("index")
 with idx_read.searcher() as searcher:
-    query = QueryParser('content', idx_read.schema).parse('python')
+    query = QueryParser("content", idx_read.schema).parse("python")
     results = searcher.search(query)
     print(results)
     print(list(results))
