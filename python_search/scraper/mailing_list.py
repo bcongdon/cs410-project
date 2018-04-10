@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 import requests
 from datetime import date, datetime
+from dateutil.parser import parse
 import time
 import logging
 from .message import Message
@@ -115,7 +116,7 @@ class MailingList:
         """Returns the pages for which there are posts in this mailing list. (Usually month-based)
 
         Scrapes the mailing list summary page to get the valid suibpages.
-        
+
         TODO: Add return type documentation
         """
         pages = []
@@ -126,18 +127,37 @@ class MailingList:
                 pages.append(page)
         return pages
 
-    def messages(self, page=None):
+    def _get_page_starting_at(self, page):
+        """Return the starting date of the page
+        """
+        logger.info('Scraping "{}" for page {}'.format(self.list_id, page))
+
+        req = requests.get('/'.join(
+            [BASE_URL, self.list_id, page, 'thread.html']
+        ))
+        soup = BeautifulSoup(req.text, 'lxml')
+
+        try:
+            date_block = soup.find('p')
+            starting_text = date_block.find('i').text
+            return parse(starting_text)
+        except Exception as e:
+            logger.warn(e)
+            logger.info("Unable to find page starting date for page: {}".format(self.list_id))
+            return datetime.now()
+
+    def messages(self, page=None, since=None):
         """
         Parameters
         ----------
         page : str, optional
             If provided, `messages` will only yield messages that were posted on this subpage
-        
+
         Yields
         ------
         Message
             The scraped message, yielded in ascending order of creation time
-        
+
         """
 
         if page is not None:
@@ -148,7 +168,11 @@ class MailingList:
         for page in pages:
             for message in self._scrape_page(page):
                 yield message
-        
+            most_recent = self._get_page_starting_at(page)
+            if since is not None and most_recent < since:
+                logger.info("Stopping scraper because {} is before {}".format(most_recent, since))
+                break
+
 
 if __name__ == '__main__':
     for message in MailingList('python-dev').messages():
