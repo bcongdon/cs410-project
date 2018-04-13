@@ -1,9 +1,14 @@
 # cs410-project
 
-## Scraper
+## Usage
 
-### Usage
 
+### Scraper
 ```
-python scraper/scraper.py
+python manage.py scrape
+```
+
+### Indexer
+```
+python manage.py index --index_dir INDEX_DIR --db DB_FILE
 ```
