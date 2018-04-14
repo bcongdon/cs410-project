@@ -12,3 +12,8 @@ python manage.py scrape
 ```
 python manage.py index --index_dir INDEX_DIR --db DB_FILE
 ```
+
+### Application
+```
+python manage.py run --index_dir INDEX_DIR
+```

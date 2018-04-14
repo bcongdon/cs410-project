@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<!-- Search form -->
+<form action="/search", method="post">
+    <div class="md-form">
+        <input class="form-control" type="text" name="query" placeholder="Search" aria-label="Search">
+    </div>
+</form>
+<br>
+
+{% block results %}{% endblock %}
+
+{% endblock %}

@@ -46,8 +46,12 @@ def search(index_dir, query):
     print(list(results))
 
 
-@manager.command
-def run():
+@manager.option(
+    "--index_dir", help="The directory of the index",
+    required=True
+)
+def run(index_dir):
+    app.config["index_dir"] = index_dir
     app.run()
 
 

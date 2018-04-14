@@ -1,9 +1,20 @@
-{% extends "layout.html" %}
-{% block body %}
-<!-- Search form -->
-<form action="/search">
-    <div class="md-form">
-        <input class="form-control" type="text" placeholder="Search" aria-label="Search">
-    </div>
-</form>
+{% extends "search.html" %}
+{% block results %}
+
+{% for result in search_results %}
+
+<div class="card">
+  <div class="card-body">
+    <h5 class="card-title">{{result.email}}</h5>
+    {% if result.author != None and result.sent_at != None %}
+    <h6 class="card-subtitle mb-2 text-muted">{{result.author + ": " + result.sent_at}}</h6>
+    {% endif %}
+    <p class="card-text">{{result.text}}</p>
+    <a href="#" class="card-link">Card link</a>
+    <a href="#" class="card-link">Another link</a>
+  </div>
+</div>
+
+{% endfor %}
+
 {% endblock %}
