@@ -5,11 +5,9 @@
 
 <div class="card">
   <div class="card-body">
-    <h5 class="card-title">{{result.email}}</h5>
-    {% if result.author != None and result.sent_at != None %}
-    <h6 class="card-subtitle mb-2 text-muted">{{result.author + ": " + result.sent_at}}</h6>
-    {% endif %}
-    <p class="card-text">{{result.text}}</p>
+    <h5 class="card-title">{{result[0]}}</h5>
+    <h6 class="card-subtitle mb-2 text-muted">{{result[1]}}</h6>
+    <p class="card-text">{{result[2]}}</p>
     <a href="#" class="card-link">Card link</a>
     <a href="#" class="card-link">Another link</a>
   </div>

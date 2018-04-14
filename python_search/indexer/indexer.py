@@ -68,7 +68,7 @@ def update_index(session, index):
                 pbar.write("Comitting at doc {}...".format(idx))
                 writer.commit()
                 writer = index.writer()
-        pbar.write("Comitting at doc {}...".format(idx+1))
+            pbar.write("Comitting at doc {}...".format(idx+1))
         writer.commit()
 
 
