@@ -15,11 +15,21 @@ def search():
     searcher = IndexSearcher(app.config["index_dir"])
     search_results = list(searcher.search(query))
 
-    #search_results = [Message(text="Hello world")]
     return render_template(
         "index.html", search_results=search_results
     )
 
+
+@app.route("/thread/<thread_id>")
+def get_list(thread_id):
+	searcher = IndexSearcher(app.config["index_dir"])
+	search_results = list(searcher.search_for_thread(thread_id))
+	search_results.sort(key = lambda tup: tup[5])
+
+	return render_template(
+        "index.html", search_results=search_results,
+        hide_thread=True
+    )
 
 if __name__ == "__main__":
     app.run(debug=True)

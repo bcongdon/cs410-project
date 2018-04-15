@@ -17,8 +17,9 @@
             {% endif %}
         {% endfor %}
     </p>
-    <a href="#" class="card-link">Email Thread</a>
-    <!--<a href="#" class="card-link">Another link</a>-->
+    {% if not hide_thread %}
+    <a href="/thread/{{result[5]}}" class="card-link">Thread</a>
+    {% endif %}
   </div>
 </div>
 <br>

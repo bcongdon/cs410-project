@@ -17,6 +17,8 @@ schema = Schema(
     content=TEXT(stored=True),
     author=TEXT(stored=True),
     sent_at=DATETIME(stored=True),
+    thread_parent=ID(stored=True),
+    thread_idx=ID(stored=True)
 )
 
 
@@ -62,7 +64,9 @@ def update_index(session, index):
                 message_id=message.message_id,
                 content=message.text,
                 author=message.author,
-                sent_at=message.sent_at
+                sent_at=message.sent_at,
+                thread_parent=str(message.thread_parent),
+                thread_idx=str(message.thread_idx)
             )
             if idx % 10000 == 0 and idx != 0:
                 pbar.write("Comitting at doc {}...".format(idx))
@@ -91,4 +95,12 @@ class IndexSearcher:
 
             results = searcher.search_page(query, page, pagelen=n)
             for result in results:
-                yield result['list_id'], result['message_id'], result['content'], result['author'], result['sent_at'].strftime('%m/%d/%Y')
+                yield result['list_id'], result['message_id'], result['content'], result['author'], result['sent_at'].strftime('%m/%d/%Y'), result['thread_parent'], result['thread_idx']
+
+    def search_for_thread(self, query_str):
+        with self.index.searcher() as searcher:
+            query = QueryParser("thread_parent", self.index.schema).parse(query_str)
+
+            results = searcher.search(query, limit=None)
+            for result in results:
+                yield result['list_id'], result['message_id'], result['content'], result['author'], result['sent_at'].strftime('%m/%d/%Y'), result['thread_parent'], result['thread_idx']
