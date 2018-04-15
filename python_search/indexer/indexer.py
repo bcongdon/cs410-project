@@ -15,8 +15,8 @@ schema = Schema(
     list_id=ID(stored=True),
     message_id=ID(stored=True),
     content=TEXT(stored=True),
-    author=TEXT,
-    sent_at=DATETIME,
+    author=TEXT(stored=True),
+    sent_at=DATETIME(stored=True),
 )
 
 
@@ -91,4 +91,4 @@ class IndexSearcher:
 
             results = searcher.search_page(query, page, pagelen=n)
             for result in results:
-                yield result['list_id'], result['message_id'], result['content']
+                yield result['list_id'], result['message_id'], result['content'], result['author'], result['sent_at'].strftime('%m/%d/%Y')

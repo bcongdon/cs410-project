@@ -6,7 +6,7 @@
 <div class="card">
   <div class="card-body">
     <h5 class="card-title">{{result[0]}}</h5>
-    <h6 class="card-subtitle mb-2 text-muted">{{result[1]}}</h6>
+    <h6 class="card-subtitle mb-2 text-muted">{{result[3] + " sent on " + result[4]}}</h6>
     {% set paragraphs = result[2].split('\n') -%}
     <p class="card-text">
         {% for para in paragraphs if not para.startswith('>') %}
@@ -17,10 +17,11 @@
             {% endif %}
         {% endfor %}
     </p>
-    <a href="#" class="card-link">Card link</a>
-    <a href="#" class="card-link">Another link</a>
+    <a href="#" class="card-link">Email Thread</a>
+    <!--<a href="#" class="card-link">Another link</a>-->
   </div>
 </div>
+<br>
 
 {% endfor %}
 
