@@ -52,7 +52,7 @@ def search(index_dir, query):
 )
 def run(index_dir):
     app.config["index_dir"] = index_dir
-    app.run()
+    app.run(debug=True)
 
 
 if __name__ == "__main__":
