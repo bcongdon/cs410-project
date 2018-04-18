@@ -7,7 +7,10 @@
   <div class="card-body">
     <h5 class="card-title">{{result[0]}}</h5>
     <h6 class="card-subtitle mb-2 text-muted">{{result[3] + " sent on " + result[4]}}</h6>
-    {% set paragraphs = result[2].split('\n') -%}
+    {% autoescape false %}
+    {{ result[2] }}
+    {% endautoescape %}
+    <!-- {% set paragraphs = result[2].split('\n') -%}
     <p class="card-text">
         {% for para in paragraphs %}
             {% if not para %}
@@ -16,7 +19,7 @@
                 <p style="margin: 0px">{{ para }}</p>
             {% endif %}
         {% endfor %}
-    </p>
+    </p> -->
     {% if not hide_thread %}
     <a href="/thread/{{result[5]}}" class="card-link">Thread</a>
     {% endif %}
