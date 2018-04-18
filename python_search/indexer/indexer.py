@@ -1,14 +1,12 @@
-import sqlite3
 import os.path
 from whoosh import index
 from whoosh.fields import Schema, TEXT, ID, DATETIME
-from whoosh.query import *
 from whoosh.qparser import QueryParser
-from dateutil.parser import parse as dateparse
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from tqdm import tqdm
 from ..scraper.model import Message
+from .cleaning import clean_message
 
 # Setup Index
 schema = Schema(
@@ -36,16 +34,6 @@ def dict_factory(cursor, row):
         d[col[0]] = row[idx]
     return d
 
-# # Establish SQLite Connection
-
-# c = conn.cursor()
-
-# # Query for Documents
-# count = c.execute('SELECT count(*) as c from message where list_id="python-dev"').fetchone()['c']
-# entries = c.execute('SELECT message_id, list_id, author, sent_at, text from message where list_id="python-dev"')
-# with tqdm(total=count) as pbar:
-#     for i, entry in enumerate(entries):
-
 
 BLACKLISTED_LISTS = []
 
@@ -62,7 +50,7 @@ def update_index(session, index):
             writer.add_document(
                 list_id=message.list_id,
                 message_id=message.message_id,
-                content=message.text,
+                content=clean_message(message.text),
                 author=message.author,
                 sent_at=message.sent_at,
                 thread_parent=str(message.thread_parent),
@@ -72,8 +60,8 @@ def update_index(session, index):
                 pbar.write("Comitting at doc {}...".format(idx))
                 writer.commit()
                 writer = index.writer()
-            pbar.write("Comitting at doc {}...".format(idx+1))
-        writer.commit()
+        pbar.write("Comitting at doc {}...".format(idx+1))
+    writer.commit()
 
 
 def index_cmd(db, index_dir):

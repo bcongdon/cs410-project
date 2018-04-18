@@ -4,14 +4,15 @@ from ..indexer.indexer import IndexSearcher
 
 app = Flask(__name__)
 
+
 @app.route("/")
 def index():
     return render_template("index.html")
 
 
-@app.route("/search", methods=["POST"])
+@app.route("/search")
 def search():
-    query = request.form["query"]
+    query = request.args.get('query')
     searcher = IndexSearcher(app.config["index_dir"])
     search_results = list(searcher.search(query))
 

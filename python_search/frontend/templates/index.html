@@ -9,7 +9,7 @@
     <h6 class="card-subtitle mb-2 text-muted">{{result[3] + " sent on " + result[4]}}</h6>
     {% set paragraphs = result[2].split('\n') -%}
     <p class="card-text">
-        {% for para in paragraphs if not para.startswith('>') %}
+        {% for para in paragraphs %}
             {% if not para %}
                 <br>
             {% else %}
