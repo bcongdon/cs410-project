@@ -1,6 +1,6 @@
 import os.path
 from whoosh import index
-from whoosh.fields import Schema, TEXT, ID, DATETIME
+from whoosh.fields import Schema, TEXT, ID, DATETIME, NUMERIC
 from whoosh.qparser import QueryParser
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -15,8 +15,10 @@ schema = Schema(
     content=TEXT(stored=True),
     author=TEXT(stored=True),
     sent_at=DATETIME(stored=True),
-    thread_parent=ID(stored=True),
-    thread_idx=ID(stored=True)
+    thread_parent=NUMERIC(stored=True),
+    thread_idx=NUMERIC(stored=True),
+    thread_indent=NUMERIC(stored=True),
+    page=TEXT(stored=True),
 )
 
 
@@ -53,8 +55,10 @@ def update_index(session, index):
                 content=clean_message(message.text),
                 author=message.author,
                 sent_at=message.sent_at,
-                thread_parent=str(message.thread_parent),
-                thread_idx=str(message.thread_idx)
+                thread_parent=message.thread_parent,
+                thread_idx=message.thread_idx,
+                thread_indent=message.thread_indent,
+                page=message.page,
             )
             if idx % 10000 == 0 and idx != 0:
                 pbar.write("Comitting at doc {}...".format(idx))
@@ -73,6 +77,20 @@ def index_cmd(db, index_dir):
     update_index(session, index)
 
 
+def index_result_to_message(result):
+    return Message(
+        list_id=result['list_id'],
+        message_id=result['message_id'],
+        text=result['content'],
+        author=result['author'],
+        thread_parent=result['thread_parent'],
+        thread_idx=result['thread_idx'],
+        thread_indent=result['thread_indent'],
+        sent_at=result['sent_at'],
+        page=result['page']
+    )
+
+
 class IndexSearcher:
     def __init__(self, index_dir):
         self.index = open_index(index_dir)
@@ -83,7 +101,7 @@ class IndexSearcher:
 
             results = searcher.search_page(query, page, pagelen=n)
             for result in results:
-                yield result['list_id'], result['message_id'], result['content'], result['author'], result['sent_at'].strftime('%m/%d/%Y'), result['thread_parent'], result['thread_idx']
+                yield index_result_to_message(result)
 
     def search_for_thread(self, query_str):
         with self.index.searcher() as searcher:
@@ -91,4 +109,4 @@ class IndexSearcher:
 
             results = searcher.search(query, limit=None)
             for result in results:
-                yield result['list_id'], result['message_id'], result['content'], result['author'], result['sent_at'].strftime('%m/%d/%Y'), result['thread_parent'], result['thread_idx']
+                yield index_result_to_message(result)

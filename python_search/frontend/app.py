@@ -14,15 +14,15 @@ def index():
 
 @app.route("/search")
 def search():
-    query = request.args.get('query')
+    query = request.args.get('query', '')
     searcher = IndexSearcher(app.config["index_dir"])
-    search_results = [list(result) for result in searcher.search(query)]
+    search_results = [result for result in searcher.search(query)]
 
     for result in search_results:
-        result[2] = render_as_html(result[2])
+        result.text = render_as_html(result.text)
 
     return render_template(
-        "index.html", search_results=search_results
+        "index.html", search_results=search_results, query=query
     )
 
 
@@ -30,11 +30,16 @@ def search():
 def get_list(thread_id):
     searcher = IndexSearcher(app.config["index_dir"])
     search_results = list(searcher.search_for_thread(thread_id))
-    search_results.sort(key=lambda tup: tup[-1])
+    search_results.sort(key=lambda res: res.thread_idx)
+
+    for result in search_results:
+        result.text = render_as_html(result.text)
 
     return render_template(
-        "index.html", search_results=search_results,
-        hide_thread=True
+        "index.html",
+        search_results=search_results,
+        hide_thread=True,
+        thread_id=thread_id,
     )
 
 
