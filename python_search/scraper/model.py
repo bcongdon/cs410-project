@@ -12,6 +12,7 @@ class Message(Base):
     list_id = Column(String, primary_key=True)
     author = Column(String)
     email = Column(String)
+    subject = Column(String)
 
     thread_parent = Column(Integer)
     thread_idx = Column(Integer)

@@ -14,6 +14,7 @@ schema = Schema(
     message_id=ID(stored=True),
     content=TEXT(stored=True),
     author=TEXT(stored=True),
+    subject=TEXT(stored=True),
     sent_at=DATETIME(stored=True),
     thread_parent=NUMERIC(stored=True),
     thread_idx=NUMERIC(stored=True),
@@ -42,7 +43,7 @@ BLACKLISTED_LISTS = []
 
 def update_index(session, index):
     print("Calculating query size...")
-    query = session.query(Message).filter(Message.sent_at > '2016-01-01').filter_by(list_id='python-dev')
+    query = session.query(Message)#.filter(Message.sent_at > '2016-01-01').filter_by(list_id='python-dev')
     count = query.count()
     writer = index.writer()
 
@@ -59,6 +60,7 @@ def update_index(session, index):
                 thread_idx=message.thread_idx,
                 thread_indent=message.thread_indent,
                 page=message.page,
+                subject=message.subject,
             )
             if idx % 10000 == 0 and idx != 0:
                 pbar.write("Comitting at doc {}...".format(idx))
@@ -87,7 +89,8 @@ def index_result_to_message(result):
         thread_idx=result['thread_idx'],
         thread_indent=result['thread_indent'],
         sent_at=result['sent_at'],
-        page=result['page']
+        page=result['page'],
+        subject=result['subject'],
     )
 
 

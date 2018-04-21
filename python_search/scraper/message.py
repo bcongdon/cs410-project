@@ -185,6 +185,27 @@ class Message:
 
         return email_elem.text.strip()
 
+    @property
+    def subject(self):
+        """Scrapes the subject of the message
+        
+        Returns
+        -------
+        str
+            The subject of the message
+        """
+        subject_elem = self.soup.find("h1")
+        if subject_elem is None:
+            logger.warn(
+                "Couldn't find subject for message {} in list {}".format(
+                    self.message_id, self.list_id
+                )
+            )
+            return None
+
+        return subject_elem.text.strip()
+
+
     def __str__(self):
         return "<Message - List: {}, Page: {}, ID: {}>".format(
             self.list_id, self.page, self.message_id

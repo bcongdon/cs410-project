@@ -14,6 +14,24 @@ logger = logging.getLogger(__name__)
 sys.setrecursionlimit(10000)
 
 
+BLACKLISTED_LISTS = [
+    "new-bugs-announce",
+    "numpy-svn",
+    "plpug",
+    "pypy-commit",
+    "pypy-issue",
+    "pytest-issue",
+    "python-checkins",
+    "python-bugs-list",
+    "pysilesia",
+    "pytest-commit",
+    "python-de",
+    "python-es",
+    "python-hu",
+    "scipy-svn",
+]
+
+
 def get_list_ids():
     """
     Returns a list of all message lists (i.e. topics) from mail;
@@ -35,6 +53,9 @@ def scrape_all(engine, start_at=None, parallelism=1, since=None):
         if start_at is not None and list_id < start_at:
             continue
 
+        if list_id in BLACKLISTED_LISTS:
+            continue
+
         logger.info('Beginning to scrape "{}"'.format(list_id))
         scrape_list(session, list_id, parallelism, since=since)
 
@@ -54,6 +75,7 @@ def message_to_db_message(message):
         thread_idx=message.thread_idx,
         thread_indent=message.thread_indent,
         page=message.page,
+        subject=message.subject
     )
     logger.info("Scraped message: {}".format(message))
     return db_message
@@ -80,6 +102,7 @@ def scrape_list(session, list_id, parallelism=1, since=None):
         if i > 0 and i % 100 == 0:
             session.commit()
             logger.info("Committed messages to database")
+    session.commit()
 
     if parallelism > 1:
         pool.close()
