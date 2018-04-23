@@ -22,7 +22,7 @@ def search():
         result.text = render_as_html(result.text)
 
     return render_template(
-        "index.html", search_results=search_results, query=query
+        "results.html", search_results=search_results, query=query
     )
 
 
@@ -36,11 +36,16 @@ def get_list(thread_id):
         result.text = render_as_html(result.text)
 
     return render_template(
-        "index.html",
+        "results.html",
         search_results=search_results,
         hide_thread=True,
         thread_id=thread_id,
     )
+
+
+@app.route('/about')
+def about():
+    return render_template('about.html')
 
 
 if __name__ == "__main__":

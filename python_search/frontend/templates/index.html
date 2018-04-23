@@ -1,40 +1,30 @@
-{% extends "search.html" %}
-{% block results %}
+{% extends "layout.html" %}
+{% block body %}
 
-{% if query %}
-<h6>Showing results for "{{ query }}"...</h6>
-{% endif %}
-{% if thread_id %}
-<h6>Showing results for thread {{ thread_id }}...</h6>
-{% endif %}
-
-{% for result in search_results %}
-
-<div class="card {{ "thread-indent" if hide_thread else "" }} thread-indent-{{ result.thread_indent }}">
-  <div class="card-body">
-    <h5 class="card-title">{{result.list_id}}</h5>
-    <h6 class="card-subtitle mb-2 text-muted">{{result.author + " sent on " + result.sent_at.strftime('%m/%d/%Y')}}</h6> 
-    {% autoescape false %}
-    {{ result.text }}
-    {% endautoescape %}
-
-    <div class="controls float-right">
-      {% if not hide_thread %}
-      <a title="View Thread" href="/thread/{{result.thread_parent}}" role="button" class="btn btn-dark btm-sm">
-        <i class="fa fa-comments"></i>
-      </a>
-      {% endif %}
-      <a title="View Original Message"
-          href="https://mail.python.org/pipermail/{{result.list_id}}/{{ result.page }}/{{ result.message_id }}.html"
-          role="button"
-          class="btn btn-dark btm-sm ">
-        <i class="fa fa-quote-right"></i>
-      </a>
+<div class="row" align-items-center>
+  <div class="col-lg-6 col-sm-16 d-block mx-auto">
+    <div class="card">
+      <div class="card-body">
+        <!-- Search form -->
+        <h5 class="card-title">Search the Python mailing lists...</h5>
+        <p class="card-text">
+          This site hosts an index of the Python mailing lists. You can use the search box below to search for messages accross a variety of topics related to the Python community/ecosystem.
+        </p>
+        <form action="/search", method="GET">
+            <div class="input-group">
+              <input class="form-control"
+                     placeholder="What do you want to learn about? 🐍" 
+                     name="query">
+              <div class="input-group-append">
+                <button class="btn btn-outline-primary" type="submit">
+                  Search <i class="fa fa-search"></i>
+                </button>
+              </div>
+            </div>
+        </form>
+      </div>
     </div>
   </div>
 </div>
-<br>
-
-{% endfor %}
 
 {% endblock %}
