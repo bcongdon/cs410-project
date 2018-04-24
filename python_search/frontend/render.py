@@ -1,6 +1,6 @@
 from markdown import Markdown
 
-renderer = Markdown(safe_mode=True, extensions=['urlize'])
+renderer = Markdown(extensions=['urlize', 'markdown.extensions.nl2br'])
 
 
 def render_as_html(message_text):
