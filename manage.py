@@ -9,7 +9,7 @@ manager = Manager(app)
     "--parallelism",
     help="The number of parallel scraping processes to use",
     type=int,
-    default=1,
+    default=4,
 )
 @manager.option(
     "--start_at", help="The mailing list to start at (alphabetically)"
