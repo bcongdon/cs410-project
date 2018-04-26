@@ -43,6 +43,20 @@ def get_list(thread_id):
     )
 
 
+@app.route('/similar/<list_id>/<message_id>')
+def get_similar(list_id, message_id):
+    searcher = IndexSearcher(app.config["index_dir"])
+    search_results = list(searcher.find_similar_messages(list_id, message_id))
+
+    for result in search_results:
+        result.text = render_as_html(result.text)
+
+    return render_template(
+        "results.html",
+        search_results=search_results,
+    )
+
+
 @app.route('/about')
 def about():
     return render_template('about.html')

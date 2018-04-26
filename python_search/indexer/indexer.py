@@ -88,7 +88,7 @@ def index_result_to_message(result):
         thread_parent=result['thread_parent'],
         thread_idx=result['thread_idx'],
         thread_indent=result['thread_indent'],
-        sent_at=result['sent_at'],
+        sent_at=result.get('sent_at'),
         page=result['page'],
         subject=result['subject'],
     )
@@ -113,3 +113,12 @@ class IndexSearcher:
             results = searcher.search(query, limit=None)
             for result in results:
                 yield index_result_to_message(result)
+
+    def find_similar_messages(self, list_id, message_id):
+        with self.index.searcher() as searcher:
+            result = searcher.document_number(list_id=list_id, message_id=message_id)
+            if not result:
+                return []
+
+            for similar in searcher.more_like(result, 'content', top=25):
+                yield index_result_to_message(similar)

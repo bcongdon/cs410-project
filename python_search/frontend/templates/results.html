@@ -13,7 +13,7 @@
 <div class="card {{ "thread-indent" if hide_thread else "" }} thread-indent-{{ result.thread_indent }}">
   <div class="card-body">
     <h5 class="card-title">{{result.list_id}}</h5>
-    <h6 class="card-subtitle mb-2 text-muted">{{result.author + " sent on " + result.sent_at.strftime('%m/%d/%Y')}}</h6> 
+    <h6 class="card-subtitle mb-2 text-muted">{{result.author}} {% if result.sent_at %} sent on {{result.sent_at.strftime('%m/%d/%Y')}} {% endif %}</h6> 
     {% autoescape false %}
     {{ result.text }}
     {% endautoescape %}
@@ -24,6 +24,12 @@
         <i class="fa fa-comments"></i>
       </a>
       {% endif %}
+      <a title="View Similar"
+          href="/similar/{{result.list_id}}/{{ result.message_id }}"
+          role="button"
+          class="btn btn-dark btm-sm ">
+        <i class="fa fa-sitemap"></i>
+      </a>
       <a title="View Original Message"
           href="https://mail.python.org/pipermail/{{result.list_id}}/{{ result.page }}/{{ result.message_id }}.html"
           role="button"
