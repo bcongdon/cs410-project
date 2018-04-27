@@ -17,8 +17,10 @@ def index():
 def search():
     query = request.args.get('query', '')
     daterange = request.args.get('daterange', '')
+    mail_list_id = request.args.get('mail-id', '')
     searcher = IndexSearcher(app.config["index_dir"])
-    search_results = [result for result in searcher.search(query) if within_range(result.sent_at, daterange)]
+    search_results = [result for result in searcher.search(query) 
+                    if within_range(result.sent_at, daterange) and same_list(result.list_id, mail_list_id)]
     
     for result in search_results:
         result.text = render_as_html(result.text)
@@ -72,6 +74,11 @@ def within_range(sent_time, daterange):
     end_date = parse(date_parts[1].strip())
     return sent_time >= start_date and sent_time < end_date
 
+
+def same_list(result_list_id, filter_list_id):
+    if not filter_list_id:
+        return True
+    return filter_list_id == result_list_id
 
 if __name__ == "__main__":
     app.run(debug=True)
