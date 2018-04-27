@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request
+from dateutil.parser import parse 
 from ..scraper.model import Message
 from ..indexer.indexer import IndexSearcher
 from markdown import markdown
@@ -15,10 +16,10 @@ def index():
 @app.route("/search")
 def search():
     query = request.args.get('query', '')
-    date_range = request.args.get('daterange', '')
+    daterange = request.args.get('daterange', '')
     searcher = IndexSearcher(app.config["index_dir"])
-    search_results = [result for result in searcher.search(query)]
-
+    search_results = [result for result in searcher.search(query) if within_range(result.sent_at, daterange)]
+    
     for result in search_results:
         result.text = render_as_html(result.text)
 
@@ -61,6 +62,15 @@ def get_similar(list_id, message_id):
 @app.route('/about')
 def about():
     return render_template('about.html')
+
+
+def within_range(sent_time, daterange):
+    if not daterange:
+        return True
+    date_parts = daterange.split('-')
+    start_date = parse(date_parts[0].strip())
+    end_date = parse(date_parts[1].strip())
+    return sent_time >= start_date and sent_time < end_date
 
 
 if __name__ == "__main__":
