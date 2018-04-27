@@ -11,7 +11,7 @@
           This site hosts an index of the Python mailing lists. You can use the search box below to search for messages accross a variety of topics related to the Python community/ecosystem.
         </p>
         <form action="/search", method="GET">
-            <div class="input-group">
+            <div class="input-group mb-3">
               <input class="form-control"
                      placeholder="What do you want to learn about? 🐍" 
                      name="query">
@@ -20,6 +20,10 @@
                   Search <i class="fa fa-search"></i>
                 </button>
               </div>
+            </div>
+            <label for="datefilter">Filter By Date</label>
+            <div class="input-group">
+              <input class="form-control" type="text" id="datefilter" name="daterange" value=""/>
             </div>
         </form>
       </div>

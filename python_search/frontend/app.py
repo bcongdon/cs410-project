@@ -15,6 +15,7 @@ def index():
 @app.route("/search")
 def search():
     query = request.args.get('query', '')
+    date_range = request.args.get('daterange', '')
     searcher = IndexSearcher(app.config["index_dir"])
     search_results = [result for result in searcher.search(query)]
 
