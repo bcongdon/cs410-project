@@ -5,11 +5,17 @@ from dateutil.parser import parse
 import time
 import logging
 from .message import Message
+import backoff
 
 logging.basicConfig(level="INFO")
 logger = logging.getLogger(__name__)
 
 BASE_URL = "https://mail.python.org/pipermail/"
+
+@backoff.on_exception(backoff.expo,
+                      requests.exceptions.RequestException)
+def get_page(url):
+    return requests.get(url)
 
 
 class MailingList:
@@ -49,7 +55,7 @@ class MailingList:
             return self._soup
 
         try:
-            req = requests.get(BASE_URL + self.list_id)
+            req = get_page(BASE_URL + self.list_id)
         except Exception as e:
             logger.error(
                 "Request failed for list {}. ".format(self.list_id), e

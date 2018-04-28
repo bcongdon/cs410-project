@@ -58,7 +58,7 @@ Note that this may take upwards of 1-2 days, as there are over 1 million message
 
 To scrape just the last month of messages, run the following command:
 ```
-python manage.py scrape --update
+python manage.py scrape --update=True
 ```
 
 You can also use the `--start_at` flag to start the scraping at a specific mailing list topic (topics are scraped incrementally).
