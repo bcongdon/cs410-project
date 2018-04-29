@@ -93,9 +93,9 @@ def scrape_list(session, list_id, parallelism=1, since=None):
         pool = Pool(processes=parallelism)
         message_generator = pool.imap(message_to_db_message, message_generator)
     else:
-        message_generator = [
+        message_generator = (
             message_to_db_message(m) for m in message_generator
-        ]
+        )
 
     for i, db_message in enumerate(message_generator):
         session.merge(db_message)

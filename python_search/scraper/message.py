@@ -2,11 +2,19 @@ from dateutil.parser import parse
 import requests
 from bs4 import BeautifulSoup
 import logging
+import backoff
+
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 BASE_URL = "https://mail.python.org/pipermail"
+
+
+@backoff.on_exception(backoff.expo,
+                      requests.exceptions.RequestException)
+def get_page(url):
+    return requests.get(url)
 
 
 class Message:
@@ -79,8 +87,7 @@ class Message:
             return self._soup
 
         try:
-            req = requests.get(
-                "/".join(
+            url = "/".join(
                     [
                         BASE_URL,
                         self.list_id,
@@ -88,7 +95,7 @@ class Message:
                         self.message_id + ".html",
                     ]
                 )
-            )
+            req = get_page(url)
             self._soup = BeautifulSoup(req.text, "lxml")
         except:
             logger.warn(
