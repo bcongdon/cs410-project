@@ -2,7 +2,8 @@
 
 ## Background
 
-// TODO
+Historically, Python mailing lists have been hard to search through and are poorly catalogued. Our motivation for this project
+was to build a search engine for these python mailing lists to enable quicker and easier searching through these Python email chains.
 
 ## Installation
 
