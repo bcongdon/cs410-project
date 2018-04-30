@@ -50,6 +50,9 @@ def update_index(session, index):
     with tqdm(total=count) as pbar:
         for idx, message in enumerate(query.yield_per(100)):
             pbar.update(1)
+            if not message.text:
+                continue
+
             writer.add_document(
                 list_id=message.list_id,
                 message_id=message.message_id,
