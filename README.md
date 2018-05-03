@@ -37,9 +37,20 @@ There are 3 main steps to setting up and running a working instance of the serve
 1. **Application** (Frontend) The frontend reads from the constructed index. It allows the user to search for messages and view message threads.
 
 ### Data Models
-
-// TODO
-
+```
+Message:
+    message_id (string): The messages "number" in its list
+    text (string): The body of the message
+    sent_at (datetime): The time the message was sent (in its local timezone)
+    list_id (string): The list (topic) the message came from
+    author (string): The name of the message's author
+    email (string): The email address of the author
+    subject (string): The subject of the message
+    thread_parent (string): The message id of this message's parent (Value is "None" if the message has no parent)
+    thread_idx (int): The position of the message in its thread
+    thread_indent (int): The indent level of the message
+    page (string): The page (usually year-month, but can vary) that the message is linked to
+```
 ## Usage
 
 ### Scraper
