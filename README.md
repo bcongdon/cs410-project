@@ -117,3 +117,12 @@ Message:
 ```
 
 This data model is replicated in the indexer and the scraper. To extend this, you will need to update the indexer schema in `python_search/indexer/indexer.py` and the database model in `python_search/scraper/model.py`.
+
+### User Interface Key
+
+![screen shot 2018-05-04 at 2 56 18 pm](https://user-images.githubusercontent.com/706257/39649954-10995f70-4fac-11e8-881e-2fc147a6a1c5.png)
+
+#### Interface functions:
+- View Message Thread: Shows a threaded interface for the mailing list. Has indent levels to describe email reply chains
+- View Similar Messages: Shows a list of similar messages using keyword extraction
+- View Original Message on mailing list: Opens a link to the original mailing list on mail.python.org
