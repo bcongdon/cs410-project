@@ -7,6 +7,8 @@ was to build a search engine for these python mailing lists to enable quicker an
 
 ## Installation
 
+**NOTE:** This project has only been tested with **python3.6.1**.
+
 Download the source:
 
 ```
@@ -24,33 +26,6 @@ pipenv shell
 pip install -r requirements.txt
 ```
 
-## Implementation Details
-
-### Application Architecture
-
-![architecture](img/architecture.svg)
-
-There are 3 main steps to setting up and running a working instance of the server:
-
-1. **Scraper**: The scraper pulls messages from the Python mailing list into a local sqlite database. This is the first step towards creating the backend data that the application serves. Running the scraper should be done fairly regularly (i.e. once per week) to make sure the data stays up-to-date. There are options in the scraper to only scrape recent messages to make this process faster.
-1. **Indexer**: The indexer transforms the data in the sqlite database into a searchable index. This process must be redone after every run of the Scraper, so that new data is searchable in the frontend.
-1. **Application** (Frontend) The frontend reads from the constructed index. It allows the user to search for messages and view message threads.
-
-### Data Models
-```
-Message:
-    message_id (string): The messages "number" in its list
-    text (string): The body of the message
-    sent_at (datetime): The time the message was sent (in its local timezone)
-    list_id (string): The list (topic) the message came from
-    author (string): The name of the message's author
-    email (string): The email address of the author
-    subject (string): The subject of the message
-    thread_parent (string): The message id of this message's parent (Value is "None" if the message has no parent)
-    thread_idx (int): The position of the message in its thread
-    thread_indent (int): The indent level of the message
-    page (string): The page (usually year-month, but can vary) that the message is linked to
-```
 ## Usage
 
 ### Scraper
@@ -112,3 +87,33 @@ INFO:werkzeug: * Restarting with stat
 ```
 
 You can then visit `http://127.0.0.1:5000/` in your browser on your local machine to view the frontend.
+
+## Implementation Details
+
+### Application Architecture
+
+![architecture](img/architecture.svg)
+
+There are 3 main steps to setting up and running a working instance of the server:
+
+1. **Scraper**: The scraper pulls messages from the Python mailing list into a local sqlite database. This is the first step towards creating the backend data that the application serves. Running the scraper should be done fairly regularly (i.e. once per week) to make sure the data stays up-to-date. There are options in the scraper to only scrape recent messages to make this process faster.
+1. **Indexer**: The indexer transforms the data in the sqlite database into a searchable index. This process must be redone after every run of the Scraper, so that new data is searchable in the frontend.
+1. **Application** (Frontend) The frontend reads from the constructed index. It allows the user to search for messages and view message threads.
+
+### Data Models
+```
+Message:
+    message_id (string): The messages "number" in its list
+    text (string): The body of the message
+    sent_at (datetime): The time the message was sent (in its local timezone)
+    list_id (string): The list (topic) the message came from
+    author (string): The name of the message's author
+    email (string): The email address of the author
+    subject (string): The subject of the message
+    thread_parent (string): The message id of this message's parent (Value is "None" if the message has no parent)
+    thread_idx (int): The position of the message in its thread
+    thread_indent (int): The indent level of the message
+    page (string): The page (usually year-month, but can vary) that the message is linked to
+```
+
+This data model is replicated in the indexer and the scraper. To extend this, you will need to update the indexer schema in `python_search/indexer/indexer.py` and the database model in `python_search/scraper/model.py`.
