@@ -64,7 +64,7 @@ To scrape the entire history of the Python mailing list, run the following comma
 python manage.py scrape
 ```
 
-Note that this may take upwards of 1-2 days, as there are over 1 million messages in the history of the mailing list and the scraper has to scrape pages relatively slowly to remain "polite".
+**Note**: This may take upwards of 1-2 days, as there are over 1 million messages in the history of the mailing list and the scraper has to scrape pages relatively slowly to remain "polite". If you just want to "try out" the scraper, please follow the instructions below to run an incremental scrape. This should only take ~20-30 minutes.
 
 **Incremental Scraping:**
 
