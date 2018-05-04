@@ -88,6 +88,10 @@ INFO:werkzeug: * Restarting with stat
 
 You can then visit `http://127.0.0.1:5000/` in your browser on your local machine to view the frontend.
 
+### Code Documentation
+
+We tried to make our code as "self-documenting" as possible. Reading through the source is a good way to begin contributing if you wish to extend this project.
+
 ## Implementation Details
 
 ### Application Architecture
