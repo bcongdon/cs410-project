@@ -52,6 +52,8 @@ You can also use the `--start_at` flag to start the scraping at a specific maili
 
 An "update" scraping session will last on the order of 30 minutes.
 
+We've included an example db (`example.db`) if you run into errors during this step.
+
 ### Indexer
 
 To run the indexer, execute the below command:
